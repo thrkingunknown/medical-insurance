@@ -166,11 +166,9 @@ export function InsuranceForm() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
-            <Activity className="h-16 w-16 text-blue-600" />
+            <img src="/LOGO.png" className="h-24" alt="MediPredict Logo" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Medical Insurance Cost Predictor
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">MediPredict</h1>
           <p className="text-lg text-gray-600">
             Enter your information to get an estimated insurance cost prediction
           </p>

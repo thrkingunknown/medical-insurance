@@ -1,4 +1,6 @@
-# 🏥 Medical Insurance Cost Predictor
+# 🏥 MediPredict
+
+# Medical Insurance Cost Predictor
 
 A modern full-stack application that predicts medical insurance costs using machine learning. Built with FastAPI, React, TypeScript, and scikit-learn.
 

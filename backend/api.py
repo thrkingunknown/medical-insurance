@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     yield
     print('Shutting down FastAPI server...')
 
-app = FastAPI(title='Medical Insurance Cost Predictor API - Enhanced', lifespan=lifespan)
+app = FastAPI(title='MediPredict API - Enhanced', lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

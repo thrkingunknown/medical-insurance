@@ -1,15 +1,8 @@
 version: 2
 updates:
-<<<<<<< HEAD
-  - package-ecosystem: "npm" # See documentation for possible values
-    directories: 
-          - "/frontend"
-          - "/backend" # Location of package manifests
-=======
   # Enable version updates for pip (Python backend)
   - package-ecosystem: "pip"
     directory: "/backend"
->>>>>>> c515fc0da78e2790b6debafc683da566dcb353b4
     schedule:
       interval: "daily"
       time: "00:00"

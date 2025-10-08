@@ -1,13 +1,29 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "npm, pip" # See documentation for possible values
-    directories: 
-          - "/frontend"
-          - "/backend" # Location of package manifests
+  # Enable version updates for pip (Python backend)
+  - package-ecosystem: "pip"
+    directory: "/backend"
     schedule:
       interval: "daily"
+      time: "00:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "pip"
+      include: "scope"
+
+  # Enable version updates for npm (JavaScript/TypeScript frontend)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "npm"
+      include: "scope"

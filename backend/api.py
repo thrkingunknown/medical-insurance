@@ -14,8 +14,11 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import xgboost as xgb
 import lightgbm as lgb
 import os
+from dotenv import load_dotenv
 import warnings
 warnings.filterwarnings('ignore')
+
+load_dotenv()
 
 trained_models = {'lr': None, 'rf': None, 'gb': None, 'xgb': None, 'lgb': None, 'ensemble': None}
 model_metrics = {}
@@ -29,9 +32,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title='MediPredict API - Enhanced', lifespan=lifespan)
 
+cors_origins = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:5174').split(',')
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:5173', 'http://localhost:5174'],
+    allow_origins=[origin.strip() for origin in cors_origins],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
@@ -228,8 +233,12 @@ if __name__ == '__main__':
     import uvicorn
     if not os.path.exists('insurance.csv'):
         print('Warning: insurance.csv not found!')
+    
+    host = os.getenv('HOST', '0.0.0.0')
+    port = int(os.getenv('PORT', '8000'))
+    
     print('Medical Insurance Cost Predictor API - ENHANCED EDITION')
-    print('Server will run at: http://localhost:8000')
-    print('API Docs: http://localhost:8000/docs')
-    print('Accuracy Endpoint: http://localhost:8000/accuracy')
-    uvicorn.run('api:app', host='0.0.0.0', port=8000, reload=True)
+    print(f'Server will run at: http://{host}:{port}')
+    print(f'API Docs: http://{host}:{port}/docs')
+    print(f'Accuracy Endpoint: http://{host}:{port}/accuracy')
+    uvicorn.run('api:app', host=host, port=port, reload=True)

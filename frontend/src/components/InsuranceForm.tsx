@@ -2,6 +2,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   User,
   TrendingUp,
@@ -162,28 +163,42 @@ export function InsuranceForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-slate-900 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <img src="/LOGO.png" className="h-24" alt="MediPredict Logo" />
+        {/* Header with Logo and Theme Toggle */}
+        <div className="text-center mb-8 sm:mb-12 relative">
+          <div className="absolute top-0 right-0">
+            <ThemeToggle />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">MediPredict</h1>
-          <p className="text-lg text-gray-600">
+          <div className="flex justify-center mb-4">
+            <img
+              src="/LOGO.png"
+              className="h-16 sm:h-20 md:h-24"
+              alt="MediPredict Logo"
+            />
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+            MediPredict
+          </h1>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 px-4">
             Enter your information to get an estimated insurance cost prediction
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Form Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 mb-8 transition-colors duration-300">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                <User className="h-6 w-6 mr-2 text-blue-600" />
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center">
+                <User className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400" />
                 Personal Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="age" className="text-gray-700">
+                  <Label
+                    htmlFor="age"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     Age
                   </Label>
                   <Input
@@ -196,12 +211,17 @@ export function InsuranceForm() {
                     className={errors.age ? "border-red-500" : ""}
                   />
                   {errors.age && (
-                    <p className="text-sm text-red-500">{errors.age}</p>
+                    <p className="text-sm text-red-500 dark:text-red-400">
+                      {errors.age}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sex" className="text-gray-700">
+                  <Label
+                    htmlFor="sex"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     Sex
                   </Label>
                   <select
@@ -211,27 +231,32 @@ export function InsuranceForm() {
                     onChange={handleInputChange}
                     className={`flex h-10 w-full rounded-md border ${
                       errors.sex ? "border-red-500" : "border-input"
-                    } bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
+                    } bg-background dark:bg-gray-700 dark:text-gray-100 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
                   >
                     <option value="">Select sex</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
                   {errors.sex && (
-                    <p className="text-sm text-red-500">{errors.sex}</p>
+                    <p className="text-sm text-red-500 dark:text-red-400">
+                      {errors.sex}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                <TrendingUp className="h-6 w-6 mr-2 text-blue-600" />
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400" />
                 Health Metrics
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="bmi" className="text-gray-700">
+                  <Label
+                    htmlFor="bmi"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     BMI (Body Mass Index)
                   </Label>
                   <Input
@@ -245,9 +270,11 @@ export function InsuranceForm() {
                     className={errors.bmi ? "border-red-500" : ""}
                   />
                   {errors.bmi && (
-                    <p className="text-sm text-red-500">{errors.bmi}</p>
+                    <p className="text-sm text-red-500 dark:text-red-400">
+                      {errors.bmi}
+                    </p>
                   )}
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     BMI = weight(kg) / height(m)²
                   </p>
                 </div>
@@ -255,7 +282,7 @@ export function InsuranceForm() {
                 <div className="space-y-2">
                   <Label
                     htmlFor="smoker"
-                    className="text-gray-700 flex items-center"
+                    className="text-gray-700 dark:text-gray-300 flex items-center"
                   >
                     <Cigarette className="h-4 w-4 mr-1" />
                     Smoking Status
@@ -267,27 +294,32 @@ export function InsuranceForm() {
                     onChange={handleInputChange}
                     className={`flex h-10 w-full rounded-md border ${
                       errors.smoker ? "border-red-500" : "border-input"
-                    } bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
+                    } bg-background dark:bg-gray-700 dark:text-gray-100 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
                   >
                     <option value="">Select status</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                   </select>
                   {errors.smoker && (
-                    <p className="text-sm text-red-500">{errors.smoker}</p>
+                    <p className="text-sm text-red-500 dark:text-red-400">
+                      {errors.smoker}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                <Users className="h-6 w-6 mr-2 text-blue-600" />
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400" />
                 Family & Location
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="children" className="text-gray-700">
+                  <Label
+                    htmlFor="children"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     Number of Children
                   </Label>
                   <Input
@@ -300,14 +332,16 @@ export function InsuranceForm() {
                     className={errors.children ? "border-red-500" : ""}
                   />
                   {errors.children && (
-                    <p className="text-sm text-red-500">{errors.children}</p>
+                    <p className="text-sm text-red-500 dark:text-red-400">
+                      {errors.children}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
                   <Label
                     htmlFor="region"
-                    className="text-gray-700 flex items-center"
+                    className="text-gray-700 dark:text-gray-300 flex items-center"
                   >
                     <MapPin className="h-4 w-4 mr-1" />
                     Region
@@ -319,7 +353,7 @@ export function InsuranceForm() {
                     onChange={handleInputChange}
                     className={`flex h-10 w-full rounded-md border ${
                       errors.region ? "border-red-500" : "border-input"
-                    } bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
+                    } bg-background dark:bg-gray-700 dark:text-gray-100 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
                   >
                     <option value="">Select region</option>
                     <option value="northeast">Northeast</option>
@@ -328,14 +362,20 @@ export function InsuranceForm() {
                     <option value="southwest">Southwest</option>
                   </select>
                   {errors.region && (
-                    <p className="text-sm text-red-500">{errors.region}</p>
+                    <p className="text-sm text-red-500 dark:text-red-400">
+                      {errors.region}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-4 pt-6 border-t">
-              <Button type="submit" className="flex-1" disabled={isLoading}>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6 border-t dark:border-gray-700">
+              <Button
+                type="submit"
+                className="flex-1 h-11 sm:h-10"
+                disabled={isLoading}
+              >
                 {isLoading ? "Calculating..." : "Calculate Insurance Cost"}
               </Button>
               <Button
@@ -343,6 +383,7 @@ export function InsuranceForm() {
                 variant="outline"
                 onClick={handleReset}
                 disabled={isLoading}
+                className="h-11 sm:h-10"
               >
                 Reset Form
               </Button>
@@ -351,22 +392,23 @@ export function InsuranceForm() {
         </div>
 
         {prediction && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 transition-colors">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center">
               Predicted Insurance Costs
             </h2>
 
-            <div className="mb-8 bg-gradient-to-br from-amber-50 to-yellow-100 rounded-xl p-6 border-2 border-amber-300 relative overflow-hidden">
+            {/* Best Model Highlight */}
+            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl p-5 sm:p-6 border-2 border-amber-300 dark:border-amber-700 relative overflow-hidden">
               <div className="absolute top-2 right-2">
-                <Crown className="h-8 w-8 text-amber-600" />
+                <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <Star className="h-5 w-5 text-amber-600 fill-amber-600" />
-                <h3 className="text-lg font-bold text-amber-900">
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
+                <h3 className="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-100">
                   Best Model: Ensemble Stacking
                 </h3>
               </div>
-              <p className="text-4xl font-bold text-amber-900 mb-2">
+              <p className="text-3xl sm:text-4xl font-bold text-amber-900 dark:text-amber-100 mb-2">
                 $
                 {prediction.ensemble.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
@@ -374,29 +416,30 @@ export function InsuranceForm() {
                 })}
               </p>
               <div className="flex items-center gap-2 mt-3">
-                <Sparkles className="h-4 w-4 text-amber-600" />
-                <p className="text-sm font-semibold text-amber-800">
+                <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
                   Accuracy: {prediction.modelAccuracies.ensemble.toFixed(2)}%
                 </p>
               </div>
-              <p className="text-xs text-amber-700 mt-2">
+              <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">
                 Combines Random Forest, Gradient Boosting & LightGBM for maximum
                 accuracy
               </p>
             </div>
 
-            <h3 className="text-lg font-semibold text-gray-700 mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
               All Model Predictions
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 hover:shadow-lg transition-shadow">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+              {/* Ridge Regression */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 sm:p-5 border border-blue-200 dark:border-blue-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-blue-800">
+                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
                     Ridge Regression
                   </h3>
-                  <Target className="h-4 w-4 text-blue-600" />
+                  <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
-                <p className="text-2xl font-bold text-blue-900 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-100 mb-2">
                   $
                   {prediction.linearRegression.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -404,24 +447,27 @@ export function InsuranceForm() {
                   })}
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-blue-600">per year</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">
+                    per year
+                  </p>
                   <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-blue-600" />
-                    <p className="text-xs font-semibold text-blue-700">
+                    <Award className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                    <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">
                       {prediction.modelAccuracies.lr.toFixed(1)}%
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200 hover:shadow-lg transition-shadow">
+              {/* Random Forest */}
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-4 sm:p-5 border border-purple-200 dark:border-purple-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-purple-800">
+                  <h3 className="text-sm font-medium text-purple-800 dark:text-purple-200">
                     Random Forest
                   </h3>
-                  <Target className="h-4 w-4 text-purple-600" />
+                  <Target className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                 </div>
-                <p className="text-2xl font-bold text-purple-900 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100 mb-2">
                   $
                   {prediction.randomForest.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -429,24 +475,27 @@ export function InsuranceForm() {
                   })}
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-purple-600">per year</p>
+                  <p className="text-xs text-purple-600 dark:text-purple-400">
+                    per year
+                  </p>
                   <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-purple-600" />
-                    <p className="text-xs font-semibold text-purple-700">
+                    <Award className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+                    <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">
                       {prediction.modelAccuracies.rf.toFixed(1)}%
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 hover:shadow-lg transition-shadow">
+              {/* Gradient Boosting */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-4 sm:p-5 border border-green-200 dark:border-green-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-green-800">
+                  <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
                     Gradient Boosting
                   </h3>
-                  <Zap className="h-4 w-4 text-green-600" />
+                  <Zap className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
-                <p className="text-2xl font-bold text-green-900 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100 mb-2">
                   $
                   {prediction.gradientBoosting.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -454,24 +503,27 @@ export function InsuranceForm() {
                   })}
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-green-600">per year</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">
+                    per year
+                  </p>
                   <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-green-600" />
-                    <p className="text-xs font-semibold text-green-700">
+                    <Award className="h-3 w-3 text-green-600 dark:text-green-400" />
+                    <p className="text-xs font-semibold text-green-700 dark:text-green-300">
                       {prediction.modelAccuracies.gb.toFixed(1)}%
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-5 border border-orange-200 hover:shadow-lg transition-shadow">
+              {/* XGBoost */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-4 sm:p-5 border border-orange-200 dark:border-orange-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-orange-800">
+                  <h3 className="text-sm font-medium text-orange-800 dark:text-orange-200">
                     XGBoost
                   </h3>
-                  <Zap className="h-4 w-4 text-orange-600" />
+                  <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                 </div>
-                <p className="text-2xl font-bold text-orange-900 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-orange-900 dark:text-orange-100 mb-2">
                   $
                   {prediction.xgboost.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -479,24 +531,27 @@ export function InsuranceForm() {
                   })}
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-orange-600">per year</p>
+                  <p className="text-xs text-orange-600 dark:text-orange-400">
+                    per year
+                  </p>
                   <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-orange-600" />
-                    <p className="text-xs font-semibold text-orange-700">
+                    <Award className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+                    <p className="text-xs font-semibold text-orange-700 dark:text-orange-300">
                       {prediction.modelAccuracies.xgb.toFixed(1)}%
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-5 border border-teal-200 hover:shadow-lg transition-shadow">
+              {/* LightGBM */}
+              <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 rounded-xl p-4 sm:p-5 border border-teal-200 dark:border-teal-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-teal-800">
+                  <h3 className="text-sm font-medium text-teal-800 dark:text-teal-200">
                     LightGBM
                   </h3>
-                  <Zap className="h-4 w-4 text-teal-600" />
+                  <Zap className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                 </div>
-                <p className="text-2xl font-bold text-teal-900 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-teal-900 dark:text-teal-100 mb-2">
                   $
                   {prediction.lightgbm.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -504,25 +559,28 @@ export function InsuranceForm() {
                   })}
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-teal-600">per year</p>
+                  <p className="text-xs text-teal-600 dark:text-teal-400">
+                    per year
+                  </p>
                   <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-teal-600" />
-                    <p className="text-xs font-semibold text-teal-700">
+                    <Award className="h-3 w-3 text-teal-600 dark:text-teal-400" />
+                    <p className="text-xs font-semibold text-teal-700 dark:text-teal-300">
                       {prediction.modelAccuracies.lgb.toFixed(1)}%
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border-2 border-amber-300 hover:shadow-lg transition-shadow">
+              {/* Ensemble */}
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 sm:p-5 border-2 border-amber-300 dark:border-amber-600 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-amber-800 flex items-center gap-1">
+                  <h3 className="text-sm font-medium text-amber-800 dark:text-amber-200 flex items-center gap-1">
                     Ensemble
-                    <Star className="h-3 w-3 text-amber-600 fill-amber-600" />
+                    <Star className="h-3 w-3 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
                   </h3>
-                  <Crown className="h-4 w-4 text-amber-600" />
+                  <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                 </div>
-                <p className="text-2xl font-bold text-amber-900 mb-2">
+                <p className="text-xl sm:text-2xl font-bold text-amber-900 dark:text-amber-100 mb-2">
                   $
                   {prediction.ensemble.toLocaleString("en-US", {
                     minimumFractionDigits: 2,
@@ -530,10 +588,12 @@ export function InsuranceForm() {
                   })}
                 </p>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-amber-600">per year</p>
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    per year
+                  </p>
                   <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-amber-600" />
-                    <p className="text-xs font-semibold text-amber-700">
+                    <Award className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
                       {prediction.modelAccuracies.ensemble.toFixed(1)}%
                     </p>
                   </div>
@@ -541,8 +601,9 @@ export function InsuranceForm() {
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600 text-center">
+            {/* Note Section */}
+            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 text-center">
                 <strong>Note:</strong> These are estimated predictions based on
                 6 different machine learning models. The Ensemble model combines
                 the best performing models for maximum accuracy. Actual

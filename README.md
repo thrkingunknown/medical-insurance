@@ -118,10 +118,10 @@ You can run both the backend and frontend simultaneously using two terminal wind
 cd backend
 
 # Generic command (if python is in PATH)
-python -m uvicorn api:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000
 
 # OR specific Python installation
-C:/Python313/python.exe -m uvicorn api:app --reload --host 0.0.0.0 --port 8000
+C:/Python313/python.exe -m uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The backend API will be available at:

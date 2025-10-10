@@ -24,8 +24,8 @@ A modern full-stack application that predicts medical insurance costs using mach
 
 ## ✨ Features
 
-- 🤖 **Multiple ML Models**: Linear Regression, Random Forest, and Gradient Boosting
-- 📊 **Real-time Predictions**: Instant insurance cost estimates
+- 🤖 **Ensemble ML Model**: Advanced stacking ensemble combining Random Forest, Gradient Boosting, and LightGBM
+- 📊 **Real-time Predictions**: Instant insurance cost estimates with high accuracy
 - 🎨 **Modern UI**: Clean, responsive interface built with React and Tailwind CSS
 - 🚀 **Fast API**: High-performance backend with automatic API documentation
 - 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
@@ -221,35 +221,34 @@ Predict insurance cost based on input parameters
 
 ```json
 {
-  "linear_regression": 5234.56,
-  "random_forest": 5456.78,
-  "gradient_boosting": 5345.67,
-  "average_prediction": 5345.67,
-  "input_data": { ... }
-}
-```
-
-#### `GET /models/info`
-
-Get information about trained models
-
-**Response:**
-
-```json
-{
-  "models": ["linear_regression", "random_forest", "gradient_boosting"],
-  "training_status": "completed",
-  "features": ["age", "sex", "bmi", "children", "smoker", "region"]
+  "ensemble": 5345.67,
+  "input_data": { ... },
+  "modelAccuracies": {
+    "rf": 77.01,
+    "gb": 80.77,
+    "lgb": 72.12,
+    "ensemble": 84.18
+  }
 }
 ```
 
 ## 🤖 Machine Learning Models
 
-The application uses three ensemble models for prediction:
+The application uses an ensemble stacking approach for maximum prediction accuracy:
 
-1. **Linear Regression** - Simple baseline model
-2. **Random Forest** - Ensemble of decision trees
-3. **Gradient Boosting** - Sequential ensemble method
+### Ensemble Components
+
+1. **Random Forest** - Ensemble of decision trees with bootstrap aggregating
+2. **Gradient Boosting** - Sequential ensemble method with gradient descent optimization
+3. **LightGBM** - Gradient boosting framework using tree-based learning algorithms
+
+### Ensemble Model
+
+The ensemble model uses **Stacking Regressor** which:
+
+- Trains Random Forest, Gradient Boosting, and LightGBM as base models
+- Uses Ridge Regression as the meta-learner to combine predictions
+- Provides superior accuracy by leveraging strengths of all three algorithms
 
 ### Features Used
 

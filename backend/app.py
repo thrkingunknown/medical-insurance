@@ -11,7 +11,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-import xgboost as xgb
 import lightgbm as lgb
 import os
 from dotenv import load_dotenv
@@ -20,7 +19,7 @@ warnings.filterwarnings('ignore')
 
 load_dotenv()
 
-trained_models = {'lr': None, 'rf': None, 'gb': None, 'xgb': None, 'lgb': None, 'ensemble': None}
+trained_models = {'rf': None, 'gb': None, 'lgb': None, 'ensemble': None}
 model_metrics = {}
 
 @asynccontextmanager
@@ -51,11 +50,6 @@ class InsuranceRequest(BaseModel):
     region: str = Field(..., pattern='^(northeast|northwest|southeast|southwest)$')
 
 class PredictionResponse(BaseModel):
-    linearRegression: float
-    randomForest: float
-    gradientBoosting: float
-    xgboost: float
-    lightgbm: float
     ensemble: float
     inputData: dict
     modelAccuracies: dict
@@ -104,15 +98,7 @@ def train_models():
         preprocessor = ColumnTransformer(transformers=[('num', RobustScaler(), numerical_features), ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), categorical_features)])
         
         print('Training models...')
-        print('[1/6] Training Ridge Regression...')
-        lr_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', Ridge(alpha=10.0))])
-        lr_pipeline.fit(X_train, y_train)
-        trained_models['lr'] = lr_pipeline
-        lr_pred = lr_pipeline.predict(X_test)
-        model_metrics['lr'] = {'r2': round(r2_score(y_test, lr_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, lr_pred)), 2), 'mae': round(mean_absolute_error(y_test, lr_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, lr_pred)}
-        print(f"  R2: {model_metrics['lr']['r2']}%, Accuracy: {model_metrics['lr']['accuracy']}%")
-        
-        print('[2/6] Training Random Forest...')
+        print('[1/4] Training Random Forest...')
         rf_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', RandomForestRegressor(n_estimators=200, max_depth=25, min_samples_split=5, min_samples_leaf=2, max_features='sqrt', random_state=42, n_jobs=-1))])
         rf_pipeline.fit(X_train, y_train)
         trained_models['rf'] = rf_pipeline
@@ -120,7 +106,7 @@ def train_models():
         model_metrics['rf'] = {'r2': round(r2_score(y_test, rf_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, rf_pred)), 2), 'mae': round(mean_absolute_error(y_test, rf_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, rf_pred)}
         print(f"  R2: {model_metrics['rf']['r2']}%, Accuracy: {model_metrics['rf']['accuracy']}%")
         
-        print('[3/6] Training Gradient Boosting...')
+        print('[2/4] Training Gradient Boosting...')
         gb_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, max_depth=7, min_samples_split=5, min_samples_leaf=2, subsample=0.8, random_state=42))])
         gb_pipeline.fit(X_train, y_train)
         trained_models['gb'] = gb_pipeline
@@ -128,15 +114,7 @@ def train_models():
         model_metrics['gb'] = {'r2': round(r2_score(y_test, gb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, gb_pred)), 2), 'mae': round(mean_absolute_error(y_test, gb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, gb_pred)}
         print(f"  R2: {model_metrics['gb']['r2']}%, Accuracy: {model_metrics['gb']['accuracy']}%")
         
-        print('[4/6] Training XGBoost...')
-        xgb_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', xgb.XGBRegressor(n_estimators=200, learning_rate=0.05, max_depth=7, min_child_weight=3, subsample=0.8, colsample_bytree=0.8, gamma=0.1, reg_alpha=0.1, reg_lambda=1.0, random_state=42, n_jobs=-1))])
-        xgb_pipeline.fit(X_train, y_train)
-        trained_models['xgb'] = xgb_pipeline
-        xgb_pred = xgb_pipeline.predict(X_test)
-        model_metrics['xgb'] = {'r2': round(r2_score(y_test, xgb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, xgb_pred)), 2), 'mae': round(mean_absolute_error(y_test, xgb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, xgb_pred)}
-        print(f"  R2: {model_metrics['xgb']['r2']}%, Accuracy: {model_metrics['xgb']['accuracy']}%")
-        
-        print('[5/6] Training LightGBM...')
+        print('[3/4] Training LightGBM...')
         lgb_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', lgb.LGBMRegressor(n_estimators=200, learning_rate=0.05, max_depth=7, num_leaves=31, min_child_samples=20, subsample=0.8, colsample_bytree=0.8, reg_alpha=0.1, reg_lambda=1.0, random_state=42, n_jobs=-1, verbose=-1))])
         lgb_pipeline.fit(X_train, y_train)
         trained_models['lgb'] = lgb_pipeline
@@ -144,7 +122,7 @@ def train_models():
         model_metrics['lgb'] = {'r2': round(r2_score(y_test, lgb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, lgb_pred)), 2), 'mae': round(mean_absolute_error(y_test, lgb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, lgb_pred)}
         print(f"  R2: {model_metrics['lgb']['r2']}%, Accuracy: {model_metrics['lgb']['accuracy']}%")
         
-        print('[6/6] Training Ensemble Stacking Model...')
+        print('[4/4] Training Ensemble Stacking Model...')
         X_train_preprocessed = preprocessor.fit_transform(X_train)
         X_test_preprocessed = preprocessor.transform(X_test)
         base_models = [('rf', RandomForestRegressor(n_estimators=100, max_depth=20, random_state=42, n_jobs=-1)), ('gb', GradientBoostingRegressor(n_estimators=100, learning_rate=0.05, max_depth=5, random_state=42)), ('lgb', lgb.LGBMRegressor(n_estimators=100, learning_rate=0.05, max_depth=5, num_leaves=31, random_state=42, n_jobs=-1, verbose=-1))]
@@ -198,26 +176,14 @@ async def predict(request: InsuranceRequest):
     try:
         customer_data = pd.DataFrame({'age': [request.age], 'sex': [request.sex], 'bmi': [request.bmi], 'children': [request.children], 'smoker': [request.smoker], 'region': [request.region]})
         customer_data = preprocess_data(customer_data)
-        lr_pred = max(0, float(trained_models['lr'].predict(customer_data)[0]))
-        rf_pred = max(0, float(trained_models['rf'].predict(customer_data)[0]))
-        gb_pred = max(0, float(trained_models['gb'].predict(customer_data)[0]))
-        xgb_pred = max(0, float(trained_models['xgb'].predict(customer_data)[0]))
-        lgb_pred = max(0, float(trained_models['lgb'].predict(customer_data)[0]))
         ensemble_pred = max(0, float(trained_models['ensemble'].predict(customer_data)[0]))
         
         return PredictionResponse(
-            linearRegression=round(lr_pred, 2), 
-            randomForest=round(rf_pred, 2), 
-            gradientBoosting=round(gb_pred, 2), 
-            xgboost=round(xgb_pred, 2), 
-            lightgbm=round(lgb_pred, 2), 
             ensemble=round(ensemble_pred, 2), 
             inputData=request.dict(), 
             modelAccuracies={
-                'lr': model_metrics['lr']['accuracy'], 
                 'rf': model_metrics['rf']['accuracy'], 
                 'gb': model_metrics['gb']['accuracy'], 
-                'xgb': model_metrics['xgb']['accuracy'], 
                 'lgb': model_metrics['lgb']['accuracy'], 
                 'ensemble': model_metrics['ensemble']['accuracy']
             }
@@ -227,7 +193,7 @@ async def predict(request: InsuranceRequest):
 
 @app.get('/models/info')
 async def models_info():
-    return {'models': {'ridge_regression': trained_models['lr'] is not None, 'random_forest': trained_models['rf'] is not None, 'gradient_boosting': trained_models['gb'] is not None, 'xgboost': trained_models['xgb'] is not None, 'lightgbm': trained_models['lgb'] is not None, 'ensemble_stacking': trained_models['ensemble'] is not None}, 'all_loaded': all(model is not None for model in trained_models.values()), 'performance': model_metrics if model_metrics else 'Not yet calculated'}
+    return {'models': {'random_forest': trained_models['rf'] is not None, 'gradient_boosting': trained_models['gb'] is not None, 'lightgbm': trained_models['lgb'] is not None, 'ensemble_stacking': trained_models['ensemble'] is not None}, 'all_loaded': all(model is not None for model in trained_models.values()), 'performance': model_metrics if model_metrics else 'Not yet calculated'}
 
 if __name__ == '__main__':
     import uvicorn

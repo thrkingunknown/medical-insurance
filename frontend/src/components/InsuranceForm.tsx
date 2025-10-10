@@ -9,9 +9,6 @@ import {
   Users,
   Cigarette,
   MapPin,
-  Award,
-  Zap,
-  Target,
   Crown,
   Star,
   Sparkles,
@@ -27,17 +24,10 @@ interface FormData {
 }
 
 interface PredictionResult {
-  linearRegression: number;
-  randomForest: number;
-  gradientBoosting: number;
-  xgboost: number;
-  lightgbm: number;
   ensemble: number;
   modelAccuracies: {
-    lr: number;
     rf: number;
     gb: number;
-    xgb: number;
     lgb: number;
     ensemble: number;
   };
@@ -133,11 +123,6 @@ export function InsuranceForm() {
 
       const data = await response.json();
       setPrediction({
-        linearRegression: data.linearRegression,
-        randomForest: data.randomForest,
-        gradientBoosting: data.gradientBoosting,
-        xgboost: data.xgboost,
-        lightgbm: data.lightgbm,
         ensemble: data.ensemble,
         modelAccuracies: data.modelAccuracies,
       });
@@ -165,7 +150,6 @@ export function InsuranceForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-slate-900 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
-        {/* Header with Logo and Theme Toggle */}
         <div className="text-center mb-8 sm:mb-12 relative">
           <div className="absolute top-0 right-0">
             <ThemeToggle />
@@ -185,7 +169,6 @@ export function InsuranceForm() {
           </p>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 mb-8 transition-colors duration-300">
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <div>
@@ -394,220 +377,40 @@ export function InsuranceForm() {
         {prediction && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 transition-colors">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center">
-              Predicted Insurance Costs
+              Predicted Insurance Cost
             </h2>
 
-            {/* Best Model Highlight */}
-            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl p-5 sm:p-6 border-2 border-amber-300 dark:border-amber-700 relative overflow-hidden">
+            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700 relative overflow-hidden">
               <div className="absolute top-2 right-2">
-                <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-amber-600 dark:text-amber-400" />
+                <Crown className="h-8 w-8 sm:h-10 sm:w-10 text-amber-600 dark:text-amber-400" />
               </div>
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
-                <h3 className="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-100">
-                  Best Model: Ensemble Stacking
+              <div className="flex items-center gap-2 mb-3">
+                <Star className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
+                <h3 className="text-lg sm:text-xl font-bold text-amber-900 dark:text-amber-100">
+                  Ensemble Model Prediction
                 </h3>
               </div>
-              <p className="text-3xl sm:text-4xl font-bold text-amber-900 dark:text-amber-100 mb-2">
+              <p className="text-4xl sm:text-5xl font-bold text-amber-900 dark:text-amber-100 mb-3">
                 $
                 {prediction.ensemble.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
               </p>
-              <div className="flex items-center gap-2 mt-3">
-                <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
-                  Accuracy: {prediction.modelAccuracies.ensemble.toFixed(2)}%
+              <div className="flex items-center gap-2 mt-4">
+                <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <p className="text-base font-semibold text-amber-800 dark:text-amber-200">
+                  Model Accuracy:{" "}
+                  {prediction.modelAccuracies.ensemble.toFixed(2)}%
                 </p>
               </div>
-              <p className="text-xs text-amber-700 dark:text-amber-300 mt-2">
-                Combines Random Forest, Gradient Boosting & LightGBM for maximum
-                accuracy
+              <p className="text-sm text-amber-700 dark:text-amber-300 mt-3">
+                This prediction combines Random Forest, Gradient Boosting, and
+                LightGBM using an ensemble stacking approach for maximum
+                accuracy and reliability.
               </p>
-            </div>
-
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              All Model Predictions
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
-              {/* Ridge Regression */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-4 sm:p-5 border border-blue-200 dark:border-blue-700 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                    Ridge Regression
-                  </h3>
-                  <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-blue-900 dark:text-blue-100 mb-2">
-                  $
-                  {prediction.linearRegression.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-blue-600 dark:text-blue-400">
-                    per year
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                    <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">
-                      {prediction.modelAccuracies.lr.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Random Forest */}
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-4 sm:p-5 border border-purple-200 dark:border-purple-700 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-purple-800 dark:text-purple-200">
-                    Random Forest
-                  </h3>
-                  <Target className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-100 mb-2">
-                  $
-                  {prediction.randomForest.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-purple-600 dark:text-purple-400">
-                    per year
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-                    <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">
-                      {prediction.modelAccuracies.rf.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Gradient Boosting */}
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-4 sm:p-5 border border-green-200 dark:border-green-700 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
-                    Gradient Boosting
-                  </h3>
-                  <Zap className="h-4 w-4 text-green-600 dark:text-green-400" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-green-900 dark:text-green-100 mb-2">
-                  $
-                  {prediction.gradientBoosting.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-green-600 dark:text-green-400">
-                    per year
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-green-600 dark:text-green-400" />
-                    <p className="text-xs font-semibold text-green-700 dark:text-green-300">
-                      {prediction.modelAccuracies.gb.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* XGBoost */}
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-4 sm:p-5 border border-orange-200 dark:border-orange-700 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-orange-800 dark:text-orange-200">
-                    XGBoost
-                  </h3>
-                  <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-orange-900 dark:text-orange-100 mb-2">
-                  $
-                  {prediction.xgboost.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-orange-600 dark:text-orange-400">
-                    per year
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-orange-600 dark:text-orange-400" />
-                    <p className="text-xs font-semibold text-orange-700 dark:text-orange-300">
-                      {prediction.modelAccuracies.xgb.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* LightGBM */}
-              <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 rounded-xl p-4 sm:p-5 border border-teal-200 dark:border-teal-700 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-teal-800 dark:text-teal-200">
-                    LightGBM
-                  </h3>
-                  <Zap className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-teal-900 dark:text-teal-100 mb-2">
-                  $
-                  {prediction.lightgbm.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-teal-600 dark:text-teal-400">
-                    per year
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-teal-600 dark:text-teal-400" />
-                    <p className="text-xs font-semibold text-teal-700 dark:text-teal-300">
-                      {prediction.modelAccuracies.lgb.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Ensemble */}
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-xl p-4 sm:p-5 border-2 border-amber-300 dark:border-amber-600 hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-amber-800 dark:text-amber-200 flex items-center gap-1">
-                    Ensemble
-                    <Star className="h-3 w-3 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
-                  </h3>
-                  <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                </div>
-                <p className="text-xl sm:text-2xl font-bold text-amber-900 dark:text-amber-100 mb-2">
-                  $
-                  {prediction.ensemble.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-amber-600 dark:text-amber-400">
-                    per year
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Award className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-                      {prediction.modelAccuracies.ensemble.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Note Section */}
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 text-center">
-                <strong>Note:</strong> These are estimated predictions based on
-                6 different machine learning models. The Ensemble model combines
-                the best performing models for maximum accuracy. Actual
-                insurance costs may vary based on additional factors.
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic">
+                Estimated annual insurance cost
               </p>
             </div>
           </div>

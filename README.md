@@ -5,10 +5,11 @@
 A modern full-stack application that predicts medical insurance costs using machine learning. Built with FastAPI, React, TypeScript, and scikit-learn.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.118.1-green.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.118.3-green.svg)
 ![React](https://img.shields.io/badge/React-19.1.0-61dafb.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue.svg)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.7.2-orange.svg)
+![LightGBM](https://img.shields.io/badge/LightGBM-4.6.0-ff69b4.svg)
 
 ## 📋 Table of Contents
 

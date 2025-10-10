@@ -2,7 +2,9 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GithubButton } from "@/components/GithubButton";
 import {
   User,
   TrendingUp,
@@ -55,6 +57,13 @@ export function InsuranceForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof FormData]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleSelectChange = (name: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
@@ -151,33 +160,34 @@ export function InsuranceForm() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-slate-900 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8 sm:mb-12 relative">
-          <div className="absolute top-0 right-0">
+          <div className="absolute top-0 right-0 flex gap-2 animate-in fade-in slide-in-from-right-4 duration-500">
+            <GithubButton />
             <ThemeToggle />
           </div>
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-4 animate-in fade-in zoom-in duration-500">
             <img
               src="/LOGO.png"
-              className="h-16 sm:h-20 md:h-24"
+              className="h-16 sm:h-20 md:h-24 transition-transform duration-300 hover:scale-110"
               alt="MediPredict Logo"
             />
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-3 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
             MediPredict
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 px-4">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 px-4 animate-in fade-in slide-in-from-bottom-3 duration-500 delay-200">
             Enter your information to get an estimated insurance cost prediction
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 mb-8 transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 mb-8 transition-all duration-300 hover:shadow-2xl dark:hover:shadow-3xl">
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center">
-                <User className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400" />
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center transition-colors duration-200">
+                <User className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400 transition-transform duration-200 hover:scale-110" />
                 Personal Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
+                <div className="space-y-2 transition-all duration-200 hover:translate-y-[-2px]">
                   <Label
                     htmlFor="age"
                     className="text-gray-700 dark:text-gray-300"
@@ -194,34 +204,33 @@ export function InsuranceForm() {
                     className={errors.age ? "border-red-500" : ""}
                   />
                   {errors.age && (
-                    <p className="text-sm text-red-500 dark:text-red-400">
+                    <p className="text-sm text-red-500 dark:text-red-400 animate-in fade-in slide-in-from-top-1 duration-200">
                       {errors.age}
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 transition-all duration-200 hover:translate-y-[-2px]">
                   <Label
                     htmlFor="sex"
                     className="text-gray-700 dark:text-gray-300"
                   >
                     Sex
                   </Label>
-                  <select
+                  <Select
                     id="sex"
                     name="sex"
                     value={formData.sex}
-                    onChange={handleInputChange}
-                    className={`flex h-10 w-full rounded-md border ${
-                      errors.sex ? "border-red-500" : "border-input"
-                    } bg-background dark:bg-gray-700 dark:text-gray-100 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
-                  >
-                    <option value="">Select sex</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
+                    onChange={(value) => handleSelectChange("sex", value)}
+                    options={[
+                      { value: "male", label: "Male" },
+                      { value: "female", label: "Female" },
+                    ]}
+                    placeholder="Select sex"
+                    hasError={!!errors.sex}
+                  />
                   {errors.sex && (
-                    <p className="text-sm text-red-500 dark:text-red-400">
+                    <p className="text-sm text-red-500 dark:text-red-400 animate-in fade-in slide-in-from-top-1 duration-200">
                       {errors.sex}
                     </p>
                   )}
@@ -229,13 +238,13 @@ export function InsuranceForm() {
               </div>
             </div>
 
-            <div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center">
-                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400" />
+            <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 delay-100">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center transition-colors duration-200">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400 transition-transform duration-200 hover:scale-110" />
                 Health Metrics
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
+                <div className="space-y-2 transition-all duration-200 hover:translate-y-[-2px]">
                   <Label
                     htmlFor="bmi"
                     className="text-gray-700 dark:text-gray-300"
@@ -253,7 +262,7 @@ export function InsuranceForm() {
                     className={errors.bmi ? "border-red-500" : ""}
                   />
                   {errors.bmi && (
-                    <p className="text-sm text-red-500 dark:text-red-400">
+                    <p className="text-sm text-red-500 dark:text-red-400 animate-in fade-in slide-in-from-top-1 duration-200">
                       {errors.bmi}
                     </p>
                   )}
@@ -262,7 +271,7 @@ export function InsuranceForm() {
                   </p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 transition-all duration-200 hover:translate-y-[-2px]">
                   <Label
                     htmlFor="smoker"
                     className="text-gray-700 dark:text-gray-300 flex items-center"
@@ -270,21 +279,20 @@ export function InsuranceForm() {
                     <Cigarette className="h-4 w-4 mr-1" />
                     Smoking Status
                   </Label>
-                  <select
+                  <Select
                     id="smoker"
                     name="smoker"
                     value={formData.smoker}
-                    onChange={handleInputChange}
-                    className={`flex h-10 w-full rounded-md border ${
-                      errors.smoker ? "border-red-500" : "border-input"
-                    } bg-background dark:bg-gray-700 dark:text-gray-100 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
-                  >
-                    <option value="">Select status</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                  </select>
+                    onChange={(value) => handleSelectChange("smoker", value)}
+                    options={[
+                      { value: "yes", label: "Yes" },
+                      { value: "no", label: "No" },
+                    ]}
+                    placeholder="Select status"
+                    hasError={!!errors.smoker}
+                  />
                   {errors.smoker && (
-                    <p className="text-sm text-red-500 dark:text-red-400">
+                    <p className="text-sm text-red-500 dark:text-red-400 animate-in fade-in slide-in-from-top-1 duration-200">
                       {errors.smoker}
                     </p>
                   )}
@@ -292,13 +300,13 @@ export function InsuranceForm() {
               </div>
             </div>
 
-            <div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center">
-                <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400" />
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6 flex items-center transition-colors duration-200">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-blue-600 dark:text-blue-400 transition-transform duration-200 hover:scale-110" />
                 Family & Location
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
+                <div className="space-y-2 transition-all duration-200 hover:translate-y-[-2px]">
                   <Label
                     htmlFor="children"
                     className="text-gray-700 dark:text-gray-300"
@@ -315,13 +323,13 @@ export function InsuranceForm() {
                     className={errors.children ? "border-red-500" : ""}
                   />
                   {errors.children && (
-                    <p className="text-sm text-red-500 dark:text-red-400">
+                    <p className="text-sm text-red-500 dark:text-red-400 animate-in fade-in slide-in-from-top-1 duration-200">
                       {errors.children}
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 transition-all duration-200 hover:translate-y-[-2px]">
                   <Label
                     htmlFor="region"
                     className="text-gray-700 dark:text-gray-300 flex items-center"
@@ -329,23 +337,22 @@ export function InsuranceForm() {
                     <MapPin className="h-4 w-4 mr-1" />
                     Region
                   </Label>
-                  <select
+                  <Select
                     id="region"
                     name="region"
                     value={formData.region}
-                    onChange={handleInputChange}
-                    className={`flex h-10 w-full rounded-md border ${
-                      errors.region ? "border-red-500" : "border-input"
-                    } bg-background dark:bg-gray-700 dark:text-gray-100 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
-                  >
-                    <option value="">Select region</option>
-                    <option value="northeast">Northeast</option>
-                    <option value="northwest">Northwest</option>
-                    <option value="southeast">Southeast</option>
-                    <option value="southwest">Southwest</option>
-                  </select>
+                    onChange={(value) => handleSelectChange("region", value)}
+                    options={[
+                      { value: "northeast", label: "Northeast" },
+                      { value: "northwest", label: "Northwest" },
+                      { value: "southeast", label: "Southeast" },
+                      { value: "southwest", label: "Southwest" },
+                    ]}
+                    placeholder="Select region"
+                    hasError={!!errors.region}
+                  />
                   {errors.region && (
-                    <p className="text-sm text-red-500 dark:text-red-400">
+                    <p className="text-sm text-red-500 dark:text-red-400 animate-in fade-in slide-in-from-top-1 duration-200">
                       {errors.region}
                     </p>
                   )}
@@ -375,41 +382,41 @@ export function InsuranceForm() {
         </div>
 
         {prediction && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 transition-colors">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-2xl p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 transition-all hover:shadow-2xl dark:hover:shadow-3xl">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center animate-in fade-in slide-in-from-top-2 duration-300">
               Predicted Insurance Cost
             </h2>
 
-            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700 relative overflow-hidden">
-              <div className="absolute top-2 right-2">
+            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+              <div className="absolute top-2 right-2 animate-in spin-in duration-500 delay-200">
                 <Crown className="h-8 w-8 sm:h-10 sm:w-10 text-amber-600 dark:text-amber-400" />
               </div>
-              <div className="flex items-center gap-2 mb-3">
-                <Star className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
+              <div className="flex items-center gap-2 mb-3 animate-in fade-in slide-in-from-left-3 duration-400">
+                <Star className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400 animate-pulse" />
                 <h3 className="text-lg sm:text-xl font-bold text-amber-900 dark:text-amber-100">
                   Ensemble Model Prediction
                 </h3>
               </div>
-              <p className="text-4xl sm:text-5xl font-bold text-amber-900 dark:text-amber-100 mb-3">
+              <p className="text-4xl sm:text-5xl font-bold text-amber-900 dark:text-amber-100 mb-3 animate-in zoom-in duration-500 delay-100">
                 $
                 {prediction.ensemble.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
               </p>
-              <div className="flex items-center gap-2 mt-4">
-                <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              <div className="flex items-center gap-2 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-400 delay-150">
+                <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400 animate-pulse" />
                 <p className="text-base font-semibold text-amber-800 dark:text-amber-200">
                   Model Accuracy:{" "}
                   {prediction.modelAccuracies.ensemble.toFixed(2)}%
                 </p>
               </div>
-              <p className="text-sm text-amber-700 dark:text-amber-300 mt-3">
+              <p className="text-sm text-amber-700 dark:text-amber-300 mt-3 animate-in fade-in duration-500 delay-200">
                 This prediction combines Random Forest, Gradient Boosting, and
                 LightGBM using an ensemble stacking approach for maximum
                 accuracy and reliability.
               </p>
-              <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic">
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic animate-in fade-in duration-500 delay-300">
                 Estimated annual insurance cost
               </p>
             </div>

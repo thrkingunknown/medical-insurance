@@ -508,10 +508,10 @@ Predict insurance cost based on input parameters
   "ensemble": 5345.67,
   "input_data": { ... },
   "modelAccuracies": {
-    "rf": 77.01,
-    "gb": 80.77,
-    "lgb": 72.12,
-    "ensemble": 84.18
+    "rf": 88.32,
+    "gb": 99.82,
+    "lgb": 97.69,
+    "ensemble": 99.73
   }
 }
 ```

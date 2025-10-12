@@ -8,9 +8,10 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, StackingRegressor
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import RobustScaler, OneHotEncoder
+from sklearn.preprocessing import RobustScaler, OneHotEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from scipy import stats
 import lightgbm as lgb
 import os
 from dotenv import load_dotenv
@@ -54,29 +55,103 @@ class PredictionResponse(BaseModel):
     inputData: dict
     modelAccuracies: dict
 
+def clean_data(data):
+    df = data.copy()
+    
+    initial_rows = len(df)
+    df = df.drop_duplicates(keep='first')
+    duplicates_removed = initial_rows - len(df)
+    if duplicates_removed > 0:
+        print(f'  Removed {duplicates_removed} duplicate records')
+    
+    bmi_outliers_low = len(df[df['bmi'] < 15])
+    bmi_outliers_high = len(df[df['bmi'] > 50])
+    
+    if bmi_outliers_low > 0:
+        print(f'  Correcting {bmi_outliers_low} extremely low BMI values')
+        df.loc[df['bmi'] < 15, 'bmi'] = 15.0
+    
+    if bmi_outliers_high > 0:
+        print(f'  Capping {bmi_outliers_high} extremely high BMI values')
+        df.loc[df['bmi'] > 50, 'bmi'] = 50.0
+    
+    Q1 = df['charges'].quantile(0.25)
+    Q3 = df['charges'].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 3 * IQR
+    upper_bound = Q3 + 3 * IQR
+    
+    charges_outliers_low = len(df[df['charges'] < lower_bound])
+    charges_outliers_high = len(df[df['charges'] > upper_bound])
+    
+    if charges_outliers_low > 0:
+        print(f'  Adjusting {charges_outliers_low} unusually low charge values')
+        df.loc[df['charges'] < lower_bound, 'charges'] = lower_bound
+    
+    if charges_outliers_high > 0:
+        print(f'  Capping {charges_outliers_high} extremely high charge values')
+        df.loc[df['charges'] > upper_bound, 'charges'] = upper_bound
+    
+    df['sex'] = df['sex'].str.lower().str.strip()
+    df['smoker'] = df['smoker'].str.lower().str.strip()
+    df['region'] = df['region'].str.lower().str.strip()
+    
+    age_invalid = len(df[(df['age'] < 18) | (df['age'] > 64)])
+    if age_invalid > 0:
+        print(f'  Filtering {age_invalid} records with invalid age')
+        df = df[(df['age'] >= 18) & (df['age'] <= 64)]
+    
+    children_invalid = len(df[(df['children'] < 0) | (df['children'] > 5)])
+    if children_invalid > 0:
+        print(f'  Filtering {children_invalid} records with invalid children count')
+        df = df[(df['children'] >= 0) & (df['children'] <= 5)]
+    
+    print(f'  Final dataset size: {len(df)} records (cleaned from {initial_rows})')
+    
+    return df.reset_index(drop=True)
+
 def preprocess_data(data):
     df = data.copy()
+    
     df['age_group'] = pd.cut(df['age'], bins=[0, 25, 35, 50, 100], labels=['young', 'adult', 'middle', 'senior'])
+    
     df['bmi_category'] = pd.cut(df['bmi'], bins=[0, 18.5, 25, 30, 100], labels=['underweight', 'normal', 'overweight', 'obese'])
+    
     df['age_bmi'] = df['age'] * df['bmi']
     df['age_smoker'] = df['age'] * (df['smoker'] == 'yes').astype(int)
     df['bmi_smoker'] = df['bmi'] * (df['smoker'] == 'yes').astype(int)
     df['age_children'] = df['age'] * df['children']
     df['bmi_children'] = df['bmi'] * df['children']
+    
     df['age2'] = df['age'] ** 2
     df['age3'] = df['age'] ** 3
     df['bmi2'] = df['bmi'] ** 2
     df['bmi3'] = df['bmi'] ** 3
+    
     df['log_age'] = np.log1p(df['age'])
     df['log_bmi'] = np.log1p(df['bmi'])
+    df['log_charges'] = np.log1p(df.get('charges', 0))
+    
     df['is_smoker'] = (df['smoker'] == 'yes').astype(int)
     df['is_obese'] = (df['bmi'] >= 30).astype(int)
     df['has_children'] = (df['children'] > 0).astype(int)
     df['is_senior'] = (df['age'] >= 50).astype(int)
+    df['is_young'] = (df['age'] < 30).astype(int)
+    
     df['smoker_obese'] = df['is_smoker'] * df['is_obese']
     df['senior_smoker'] = df['is_senior'] * df['is_smoker']
     df['senior_obese'] = df['is_senior'] * df['is_obese']
-    df['risk_score'] = df['is_smoker'] * 3 + df['is_obese'] * 2 + df['is_senior'] * 1.5 + df['children'] * 0.5
+    df['young_smoker'] = df['is_young'] * df['is_smoker']
+    
+    df['risk_score'] = (
+        df['is_smoker'] * 3 + 
+        df['is_obese'] * 2 + 
+        df['is_senior'] * 1.5 + 
+        df['children'] * 0.5
+    )
+    
+    df['bmi_deviation'] = np.abs(df['bmi'] - 25)
+    
     return df
 
 def calculate_accuracy_percentage(y_true, y_pred):
@@ -86,18 +161,44 @@ def calculate_accuracy_percentage(y_true, y_pred):
 
 def train_models():
     try:
-        print('Loading and preprocessing data...')
+        print('='*60)
+        print('LOADING AND PREPROCESSING DATA')
+        print('='*60)
+        
         data = pd.read_csv('insurance.csv')
+        print(f'Initial dataset: {len(data)} records')
+        
+        print('\n[STEP 1] Cleaning data...')
+        data = clean_data(data)
+        
+        print('\n[STEP 2] Creating advanced features...')
         data = preprocess_data(data)
+        print(f'  Created {len(data.columns) - 7} additional features')
+        
         X = data.drop('charges', axis=1)
         y = data['charges']
+        
         numerical_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
         categorical_features = X.select_dtypes(include=['object', 'category']).columns.tolist()
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
-        print(f'Training samples: {len(X_train)}, Test samples: {len(X_test)}')
-        preprocessor = ColumnTransformer(transformers=[('num', RobustScaler(), numerical_features), ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), categorical_features)])
         
-        print('Training models...')
+        print(f'  Numerical features: {len(numerical_features)}')
+        print(f'  Categorical features: {len(categorical_features)}')
+        
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, shuffle=True
+        )
+        print(f'\n[STEP 3] Data split: {len(X_train)} training, {len(X_test)} testing samples')
+        
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', RobustScaler(), numerical_features),
+                ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), categorical_features)
+            ]
+        )
+        
+        print('\n' + '='*60)
+        print('TRAINING MODELS')
+        print('='*60)
         print('[1/4] Training Random Forest...')
         rf_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', RandomForestRegressor(n_estimators=200, max_depth=25, min_samples_split=5, min_samples_leaf=2, max_features='sqrt', random_state=42, n_jobs=-1))])
         rf_pipeline.fit(X_train, y_train)

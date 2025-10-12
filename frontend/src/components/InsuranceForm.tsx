@@ -411,11 +411,6 @@ export function InsuranceForm() {
                   {prediction.modelAccuracies.ensemble.toFixed(2)}%
                 </p>
               </div>
-              <p className="text-sm text-amber-700 dark:text-amber-300 mt-3 animate-in fade-in duration-500 delay-200">
-                This prediction combines Random Forest, Gradient Boosting, and
-                LightGBM using an ensemble stacking approach for maximum
-                accuracy and reliability.
-              </p>
               <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic animate-in fade-in duration-500 delay-300">
                 Estimated annual insurance cost
               </p>

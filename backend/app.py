@@ -10,7 +10,7 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import RobustScaler, OneHotEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, f1_score
 from scipy import stats
 import lightgbm as lgb
 import os
@@ -159,6 +159,23 @@ def calculate_accuracy_percentage(y_true, y_pred):
     accuracy = max(0, 100 - mape)
     return round(accuracy, 2)
 
+def calculate_f1_score(y_true, y_pred):
+    """
+    Calculate F1 score by converting regression to classification bins.
+    Bins are based on quartiles: low, medium-low, medium-high, high cost.
+    """
+    # Create bins based on quartiles of y_true
+    bins = [0, np.percentile(y_true, 25), np.percentile(y_true, 50), 
+            np.percentile(y_true, 75), np.inf]
+    
+    # Convert to categorical labels
+    y_true_binned = pd.cut(y_true, bins=bins, labels=[0, 1, 2, 3], include_lowest=True)
+    y_pred_binned = pd.cut(y_pred, bins=bins, labels=[0, 1, 2, 3], include_lowest=True)
+    
+    # Calculate F1 score with macro averaging
+    f1 = f1_score(y_true_binned, y_pred_binned, average='macro', zero_division=0)
+    return round(f1, 4)
+
 def train_models():
     try:
         print('='*60)
@@ -204,24 +221,24 @@ def train_models():
         rf_pipeline.fit(X_train, y_train)
         trained_models['rf'] = rf_pipeline
         rf_pred = rf_pipeline.predict(X_test)
-        model_metrics['rf'] = {'r2': round(r2_score(y_test, rf_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, rf_pred)), 2), 'mae': round(mean_absolute_error(y_test, rf_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, rf_pred)}
-        print(f"  R2: {model_metrics['rf']['r2']}%, Accuracy: {model_metrics['rf']['accuracy']}%")
+        model_metrics['rf'] = {'r2': round(r2_score(y_test, rf_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, rf_pred)), 2), 'mae': round(mean_absolute_error(y_test, rf_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, rf_pred), 'f1': calculate_f1_score(y_test, rf_pred)}
+        print(f"  R2: {model_metrics['rf']['r2']}%, Accuracy: {model_metrics['rf']['accuracy']}%, F1: {model_metrics['rf']['f1']}")
         
         print('[2/4] Training Gradient Boosting...')
         gb_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, max_depth=7, min_samples_split=5, min_samples_leaf=2, subsample=0.8, random_state=42))])
         gb_pipeline.fit(X_train, y_train)
         trained_models['gb'] = gb_pipeline
         gb_pred = gb_pipeline.predict(X_test)
-        model_metrics['gb'] = {'r2': round(r2_score(y_test, gb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, gb_pred)), 2), 'mae': round(mean_absolute_error(y_test, gb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, gb_pred)}
-        print(f"  R2: {model_metrics['gb']['r2']}%, Accuracy: {model_metrics['gb']['accuracy']}%")
+        model_metrics['gb'] = {'r2': round(r2_score(y_test, gb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, gb_pred)), 2), 'mae': round(mean_absolute_error(y_test, gb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, gb_pred), 'f1': calculate_f1_score(y_test, gb_pred)}
+        print(f"  R2: {model_metrics['gb']['r2']}%, Accuracy: {model_metrics['gb']['accuracy']}%, F1: {model_metrics['gb']['f1']}")
         
         print('[3/4] Training LightGBM...')
         lgb_pipeline = Pipeline([('preprocessor', preprocessor), ('regressor', lgb.LGBMRegressor(n_estimators=200, learning_rate=0.05, max_depth=7, num_leaves=31, min_child_samples=20, subsample=0.8, colsample_bytree=0.8, reg_alpha=0.1, reg_lambda=1.0, random_state=42, n_jobs=-1, verbose=-1))])
         lgb_pipeline.fit(X_train, y_train)
         trained_models['lgb'] = lgb_pipeline
         lgb_pred = lgb_pipeline.predict(X_test)
-        model_metrics['lgb'] = {'r2': round(r2_score(y_test, lgb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, lgb_pred)), 2), 'mae': round(mean_absolute_error(y_test, lgb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, lgb_pred)}
-        print(f"  R2: {model_metrics['lgb']['r2']}%, Accuracy: {model_metrics['lgb']['accuracy']}%")
+        model_metrics['lgb'] = {'r2': round(r2_score(y_test, lgb_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, lgb_pred)), 2), 'mae': round(mean_absolute_error(y_test, lgb_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, lgb_pred), 'f1': calculate_f1_score(y_test, lgb_pred)}
+        print(f"  R2: {model_metrics['lgb']['r2']}%, Accuracy: {model_metrics['lgb']['accuracy']}%, F1: {model_metrics['lgb']['f1']}")
         
         print('[4/4] Training Ensemble Stacking Model...')
         X_train_preprocessed = preprocessor.fit_transform(X_train)
@@ -239,8 +256,8 @@ def train_models():
         
         trained_models['ensemble'] = StackingPipeline(preprocessor, stacking)
         ensemble_pred = stacking.predict(X_test_preprocessed)
-        model_metrics['ensemble'] = {'r2': round(r2_score(y_test, ensemble_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, ensemble_pred)), 2), 'mae': round(mean_absolute_error(y_test, ensemble_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, ensemble_pred)}
-        print(f"  R2: {model_metrics['ensemble']['r2']}%, Accuracy: {model_metrics['ensemble']['accuracy']}%")
+        model_metrics['ensemble'] = {'r2': round(r2_score(y_test, ensemble_pred) * 100, 2), 'rmse': round(np.sqrt(mean_squared_error(y_test, ensemble_pred)), 2), 'mae': round(mean_absolute_error(y_test, ensemble_pred), 2), 'accuracy': calculate_accuracy_percentage(y_test, ensemble_pred), 'f1': calculate_f1_score(y_test, ensemble_pred)}
+        print(f"  R2: {model_metrics['ensemble']['r2']}%, Accuracy: {model_metrics['ensemble']['accuracy']}%, F1: {model_metrics['ensemble']['f1']}")
         
         print('='*60)
         print('ALL MODELS TRAINED SUCCESSFULLY!')
@@ -250,7 +267,8 @@ def train_models():
             acc_str = str(metrics['accuracy'])
             r2_str = str(metrics['r2'])
             rmse_str = str(metrics['rmse'])
-            print(f"{model_name.upper()}: Accuracy: {acc_str}% | R2: {r2_str}% | RMSE: ${rmse_str}")
+            f1_str = str(metrics['f1'])
+            print(f"{model_name.upper()}: Accuracy: {acc_str}% | R2: {r2_str}% | RMSE: ${rmse_str} | F1: {f1_str}")
         best_model = max(model_metrics.items(), key=lambda x: x[1]['accuracy'])
         print(f"BEST MODEL: {best_model[0].upper()} with {best_model[1]['accuracy']}% accuracy")
         return True
@@ -268,7 +286,7 @@ async def root():
 async def get_accuracy():
     if not model_metrics:
         raise HTTPException(status_code=503, detail='Models not yet trained. Please try again in a moment.')
-    return {'metrics': model_metrics, 'best_model': max(model_metrics.items(), key=lambda x: x[1]['accuracy'])[0], 'summary': {'average_accuracy': round(sum(m['accuracy'] for m in model_metrics.values()) / len(model_metrics), 2), 'average_r2': round(sum(m['r2'] for m in model_metrics.values()) / len(model_metrics), 2), 'total_models': len(model_metrics)}}
+    return {'metrics': model_metrics, 'best_model': max(model_metrics.items(), key=lambda x: x[1]['accuracy'])[0], 'summary': {'average_accuracy': round(sum(m['accuracy'] for m in model_metrics.values()) / len(model_metrics), 2), 'average_r2': round(sum(m['r2'] for m in model_metrics.values()) / len(model_metrics), 2), 'average_f1': round(sum(m['f1'] for m in model_metrics.values()) / len(model_metrics), 4), 'total_models': len(model_metrics)}}
 
 @app.post('/predict', response_model=PredictionResponse)
 async def predict(request: InsuranceRequest):
@@ -308,4 +326,4 @@ if __name__ == '__main__':
     print(f'Server will run at: http://{host}:{port}')
     print(f'API Docs: http://{host}:{port}/docs')
     print(f'Accuracy Endpoint: http://{host}:{port}/accuracy')
-    uvicorn.run('api:app', host=host, port=port, reload=True)
+    uvicorn.run('app:app', host=host, port=port, reload=True)

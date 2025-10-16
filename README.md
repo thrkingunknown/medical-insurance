@@ -203,8 +203,39 @@ The application uses an advanced ensemble learning approach with four sophistica
 
 - **R² Score**: ~0.85-0.90 (varies by model)
 - **MAE**: Mean Absolute Error tracking
+- **F1 Score**: Macro-averaged F1 score for cost quartile classification
 - **Cross-Validation**: 5-fold validation for reliability
 - **Feature Importance**: Top features include smoking status, age, BMI
+
+### Evaluation Metrics
+
+The application tracks multiple performance metrics for each model:
+
+1. **R² Score (Coefficient of Determination)**
+   - Measures how well predictions fit the actual data
+   - Scaled to percentage (0-100%)
+   - Higher is better
+
+2. **RMSE (Root Mean Squared Error)**
+   - Measures prediction error in dollar terms
+   - Lower values indicate better predictions
+   - Penalizes larger errors more heavily
+
+3. **MAE (Mean Absolute Error)**
+   - Average absolute difference between predicted and actual costs
+   - Easy to interpret in dollar amounts
+   - Lower is better
+
+4. **Accuracy Percentage**
+   - Based on Mean Absolute Percentage Error (MAPE)
+   - Calculated as: 100 - MAPE
+   - Represents overall prediction accuracy
+
+5. **F1 Score**
+   - Converts regression to classification using cost quartiles
+   - Bins: low, medium-low, medium-high, high cost
+   - Macro-averaged across all quartiles
+   - Ranges from 0 to 1 (higher is better)
 
 ## 🧪 Testing
 
@@ -478,9 +509,58 @@ Health check endpoint
 
 ```json
 {
-  "message": "Medical Insurance Cost Predictor API is running!",
-  "version": "1.0.0",
-  "status": "healthy"
+  "message": "Medical Insurance Cost Predictor API - Enhanced Edition",
+  "status": "running",
+  "models_loaded": true,
+  "total_models": 4
+}
+```
+
+#### `GET /accuracy`
+
+Get detailed performance metrics for all models
+
+**Response:**
+
+```json
+{
+  "metrics": {
+    "rf": {
+      "r2": 88.32,
+      "rmse": 4523.45,
+      "mae": 2341.12,
+      "accuracy": 88.32,
+      "f1": 0.8456
+    },
+    "gb": {
+      "r2": 99.82,
+      "rmse": 1234.56,
+      "mae": 876.54,
+      "accuracy": 99.82,
+      "f1": 0.9234
+    },
+    "lgb": {
+      "r2": 97.69,
+      "rmse": 2123.45,
+      "mae": 1456.78,
+      "accuracy": 97.69,
+      "f1": 0.8912
+    },
+    "ensemble": {
+      "r2": 99.73,
+      "rmse": 1156.78,
+      "mae": 823.45,
+      "accuracy": 99.73,
+      "f1": 0.9345
+    }
+  },
+  "best_model": "gb",
+  "summary": {
+    "average_accuracy": 96.39,
+    "average_r2": 96.39,
+    "average_f1": 0.8987,
+    "total_models": 4
+  }
 }
 ```
 
@@ -512,6 +592,54 @@ Predict insurance cost based on input parameters
     "gb": 99.82,
     "lgb": 97.69,
     "ensemble": 99.73
+  }
+}
+```
+
+#### `GET /models/info`
+
+Get information about loaded models and their status
+
+**Response:**
+
+```json
+{
+  "models": {
+    "random_forest": true,
+    "gradient_boosting": true,
+    "lightgbm": true,
+    "ensemble_stacking": true
+  },
+  "all_loaded": true,
+  "performance": {
+    "rf": {
+      "r2": 88.32,
+      "rmse": 4523.45,
+      "mae": 2341.12,
+      "accuracy": 88.32,
+      "f1": 0.8456
+    },
+    "gb": {
+      "r2": 99.82,
+      "rmse": 1234.56,
+      "mae": 876.54,
+      "accuracy": 99.82,
+      "f1": 0.9234
+    },
+    "lgb": {
+      "r2": 97.69,
+      "rmse": 2123.45,
+      "mae": 1456.78,
+      "accuracy": 97.69,
+      "f1": 0.8912
+    },
+    "ensemble": {
+      "r2": 99.73,
+      "rmse": 1156.78,
+      "mae": 823.45,
+      "accuracy": 99.73,
+      "f1": 0.9345
+    }
   }
 }
 ```

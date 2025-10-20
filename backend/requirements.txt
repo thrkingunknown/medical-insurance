@@ -1,6 +1,6 @@
 fastapi==0.119.0
 uvicorn==0.38.0
-pydantic==2.12.2
+pydantic==2.12.3
 pydantic-core==2.41.4
 numpy==2.3.4
 pandas==2.3.3

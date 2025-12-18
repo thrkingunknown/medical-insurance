@@ -7,5 +7,5 @@ pandas==2.3.3
 scikit-learn==1.8.0
 scipy>=1.16.2
 lightgbm==4.6.0
-python-multipart==0.0.20
+python-multipart==0.0.21
 python-dotenv==1.2.1

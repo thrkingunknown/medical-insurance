@@ -5,7 +5,7 @@ pydantic-core==2.47.0
 numpy==2.4.6
 pandas==3.0.3
 scikit-learn==1.9.0
-scipy>=1.17.1
+scipy>=1.18.0
 lightgbm==4.6.0
 python-multipart==0.0.32
 python-dotenv==1.2.2

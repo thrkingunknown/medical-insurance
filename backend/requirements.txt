@@ -2,7 +2,7 @@ fastapi==0.139.0
 uvicorn==0.50.0
 pydantic==2.13.4
 pydantic-core==2.47.0
-numpy==2.5.0
+numpy==2.5.1
 pandas==3.0.4
 scikit-learn==1.9.0
 scipy>=1.18.0
